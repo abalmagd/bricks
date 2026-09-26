@@ -1,0 +1,13 @@
+{
+  "en": "English",
+  "app_name": "{{name.titleCase()}}",
+  "errors": {
+    "remote": {
+      "timeout": "Request timed out",
+      "no_internet": "No internet connection",
+      "error": "Network error",
+      "unknown": "An error occurred",
+      "not_found": "Not found"
+    }
+  }
+}

@@ -1,0 +1,98 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dartz/dartz.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:{{name.snakeCase()}}/core/app/error/failure.dart';
+import 'package:{{name.snakeCase()}}/core/app/error/failure_types.dart';
+import 'package:{{name.snakeCase()}}/core/app/localization/locale_keys.dart';
+
+final firestoreProvider = Provider<FirestoreManager>((ref) {
+  return FirestoreManager();
+});
+
+class FirestoreManager {
+  final FirebaseFirestore _db = FirebaseFirestore.instance;
+
+  Left<Failure, Never> _handleError(Object e) {
+    if (e is FirebaseException) {
+      return Left(FirebaseFailure(
+        type: e.code,
+        message: e.message ?? LocaleKeys.errors_remote_unknown.tr(),
+      ));
+    }
+    return Left(UnknownFailure());
+  }
+
+  Future<Either<Failure, T>> getDocument<T>({
+    required String path,
+    required T Function(Map<String, dynamic>) fromJson,
+  }) async {
+    try {
+      final doc = await _db.doc(path).get();
+      if (!doc.exists || doc.data() == null) {
+        return Left(
+          FirebaseFailure(
+            type: null,
+            message: LocaleKeys.errors_remote_not_found.tr(),
+          ),
+        );
+      }
+      return Right(fromJson(doc.data()!));
+    } catch (e) {
+      return _handleError(e);
+    }
+  }
+
+  Future<Either<Failure, void>> setDocument({
+    required String path,
+    required Map<String, dynamic> data,
+    SetOptions? options,
+  }) async {
+    try {
+      await _db.doc(path).set(data, options);
+      return const Right(null);
+    } catch (e) {
+      return _handleError(e);
+    }
+  }
+
+  Future<Either<Failure, void>> updateDocument({
+    required String path,
+    required Map<String, dynamic> data,
+  }) async {
+    try {
+      await _db.doc(path).update(data);
+      return const Right(null);
+    } catch (e) {
+      return _handleError(e);
+    }
+  }
+
+  Future<Either<Failure, void>> deleteDocument({required String path}) async {
+    try {
+      await _db.doc(path).delete();
+      return const Right(null);
+    } catch (e) {
+      return _handleError(e);
+    }
+  }
+
+  Stream<Either<Failure, List<T>>> streamCollection<T>({
+    required String path,
+    required T Function(Map<String, dynamic>) fromJson,
+  }) {
+    return _db.collection(path).snapshots().map(
+      (snapshot) {
+        try {
+          return Right(
+            snapshot.docs.map((doc) {
+              return fromJson(doc.data());
+            }).toList(),
+          );
+        } catch (e) {
+          return _handleError(e);
+        }
+      },
+    );
+  }
+}
