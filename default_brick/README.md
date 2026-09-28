@@ -9,12 +9,16 @@ A Mason brick that generates a production-ready Flutter project scaffold with cl
 - **Flavors** — dev and prod entry points with per-flavor `FlavorConfig` (base URL, logging toggle, banner)
 - **State management** — `flutter_riverpod` + `hooks_riverpod` + `flutter_hooks`
 - **Navigation** — `go_router` with `SentryNavigatorObserver`
-- **Error handling** — `dartz` `Either<Failure, T>` across all layers
+- **Error handling** — `dartz` `Either<Failure, T>` across all layers; typed `Failure` subclasses (`AppFailure`, `NetworkFailure`, `FirebaseFailure`, `UnknownFailure`)
 - **Local storage** — `SharedPreferences` (non-sensitive) + `FlutterSecureStorage` (sensitive) via `StorageController`
 - **Localization** — `easy_localization` with type-safe `LocaleKeys`
 - **Crash reporting** — `sentry_flutter` with screenshot and thread attachment
 - **Theming** — Material Design 3 with custom `Palette`, `CustomTextTheme`, and `ColorScheme` extensions
 - **Architecture** — three-layer clean architecture: presentation → domain → data
+- **Core datasource** — `CoreDatasource` aggregates `DioClient`, `FirestoreManager`, and `StorageController` behind a single injectable `coreDatasourceProvider`; feature datasources inject it for shared remote and local access
+- **Example feature** — `lib/features/example/` included as a working reference scaffold
+- **Agent skills** — `.agents/skills/` with 35 curated skill modules for `dart`, `flutter`, and `riverpod`, aligned to the brick's stack
+- **MCP server** — `.mcp.json` pre-configured with `flutter-skill`; installed automatically via npm during generation if not already on PATH
 
 ## Variables
 

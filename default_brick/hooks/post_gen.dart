@@ -61,7 +61,10 @@ Future<void> run(HookContext context) async {
     _addCFBundleLocalizations(context);
   }
 
-  // 9. Configure Firebase interactively
+  // 9. Install flutter-skill MCP server if not already on PATH
+  _ensureFlutterSkill(context);
+
+  // 10. Configure Firebase interactively
   if (useFirebase) {
     final confirmed = context.logger.confirm(
       'Run `flutterfire configure` now? (requires Firebase CLI + login)',
@@ -84,6 +87,28 @@ Future<void> run(HookContext context) async {
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
+
+void _ensureFlutterSkill(HookContext context) {
+  final check = Process.runSync(
+    'flutter-skill', ['--version'],
+    runInShell: true,
+  );
+  if (check.exitCode == 0) return;
+
+  final progress = context.logger.progress('Install flutter-skill');
+  final result = Process.runSync(
+    'npm', ['install', '-g', 'flutter-skill'],
+    runInShell: true,
+  );
+  if (result.exitCode == 0) {
+    progress.complete('Installed flutter-skill');
+  } else {
+    progress.fail('flutter-skill install failed');
+    context.logger.warn(
+      'Install manually: npm install -g flutter-skill',
+    );
+  }
+}
 
 String _orgPrefix(String bundleId) {
   return bundleId.contains('.')

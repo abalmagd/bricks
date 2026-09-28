@@ -63,13 +63,15 @@ lib/
 │   │       └── core.dart          # Core.initApp() + Core.appRunner() — app bootstrap
 │   │
 │   ├── data/
+│   │   ├── core_datasource.dart   # CoreDatasource — wraps DioClient / FirestoreManager / StorageController
 │   │   ├── local/
 │   │   │   ├── local_storage.dart # StorageController: setPrefs<T>(), getPrefs<T>(), setSecured(), getSecured()
 │   │   │   ├── shared_prefs.dart  # storageProvider (NotifierProvider<StorageController>)
 │   │   │   └── storage_keys.dart  # StorageKeys enum — add new keys here
 │   ├── domain/
-│   │   ├── models/                # Feature models go here
-│   │   └── repositories/          # Feature repository interfaces go here
+│   │   ├── models/                # Shared domain models go here
+│   │   └── repositories/
+│   │       └── core_repository.dart  # CoreRepository — abstract interface for shared data access
 │   │
 │   └── presentation/
 │       ├── providers/
@@ -183,11 +185,18 @@ final myProvider = Provider.autoDispose<Foo>((ref) {
 
 ## Error Handling
 
-`Failure` ([lib/core/app/error/failure.dart](lib/core/app/error/failure.dart)) is the single error type across all layers.
+`Failure` ([lib/core/app/error/failure.dart](lib/core/app/error/failure.dart)) is the single error type across all layers. Use the most specific subclass from [lib/core/app/error/failure_types.dart](lib/core/app/error/failure_types.dart):
+
+| Class | When to use |
+|---|---|
+| `AppFailure` | Business logic / validation errors |
+| `NetworkFailure` | HTTP / Dio errors (emitted by `DioClient`) |
+| `FirebaseFailure` | Firestore / Firebase errors (emitted by `FirestoreManager`) |
+| `UnknownFailure` | Unexpected exceptions; no-arg constructor, localized defaults |
 
 | Factory | Source |
 |---|---|
-| `Failure.custom(type, message)` | Any manual error |
+| `Failure.custom(type, message)` | Any manual inline error |
 
 Call `failure.toast()` to show an error toast to the user.
 
@@ -264,6 +273,34 @@ firestore.streamCollection<User>(
 
 ---
 
+## Core Data Layer
+
+`CoreDatasource` ([lib/core/data/core_datasource.dart](lib/core/data/core_datasource.dart)) implements `CoreRepository` and aggregates all available data clients into one injectable class:
+
+| Field | Type | Condition |
+|---|---|---|
+| `dio` | `DioClient` | `use_remote: true` |
+| `firestore` | `FirestoreManager` | `use_firebase: true` |
+| `storage` | `StorageController` | always |
+
+Inject via `coreDatasourceProvider` in feature datasources:
+
+```dart
+final myFeatureDatasourceProvider = Provider<MyFeatureRepository>(
+  (ref) => MyFeatureDatasource(ref.read(coreDatasourceProvider)),
+);
+
+class MyFeatureDatasource implements MyFeatureRepository {
+  MyFeatureDatasource(this._core);
+  final CoreRepository _core;
+
+  Future<Either<Failure, List<MyModel>>> getItems() =>
+      _core.source.dio.get('/items', fromJson: MyModel.fromJson);
+}
+```
+
+---
+
 ## Routing
 
 Routes are registered in [lib/core/app/router/routes.dart](lib/core/app/router/routes.dart) via `routesProvider`. The router uses `SentryNavigatorObserver` and shows an inline error scaffold for unmatched paths.
@@ -304,11 +341,22 @@ Access config via `FlavorConfig.instance.settings` — exposes `baseUrl`, `enabl
 ## Adding a New Feature
 
 1. Create `lib/features/<feature>/` with `data/`, `domain/`, `presentation/` subdirectories.
-2. **Domain** — add model(s) extending `Equatable` with `fromJson`.
-3. **Data** — add a repository class that implements the domain interface and returns `Either<Failure, T>`.
+2. **Domain** — add model(s) extending `Equatable` with `fromJson`; add an `abstract interface class` repository in `domain/repositories/`.
+3. **Data** — add a datasource class that `implements` the domain repository interface; inject `coreDatasourceProvider` for remote and local calls; returns `Either<Failure, T>`.
 4. **Presentation** — add a `NotifierProvider` + `Notifier` subclass; add `HookConsumerWidget` screens.
 5. Register routes in [lib/core/app/router/routes.dart](lib/core/app/router/routes.dart).
 6. Add storage keys to `StorageKeys` as needed.
+
+---
+
+## AI Tooling
+
+| File/Dir | Auto-loaded | Purpose |
+|---|---|---|
+| `CLAUDE.md` | Yes | Architecture guide and conventions (this file) |
+| `.agents/rules/` | Yes | Supplemental agent rules (e.g. hot reload) |
+| `.agents/skills/` | No — invoke with `/skill-name` | 35 skill modules for dart, flutter, and riverpod |
+| `.mcp.json` | Yes | MCP server: `flutter-skill` |
 
 ---
 

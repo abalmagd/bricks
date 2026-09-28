@@ -31,11 +31,23 @@ lib/
 ├── environment/     # Flavor entry points + app widget
 ├── core/
 │   ├── app/         # Constants, error handling, localization, routing, utilities
-│   ├── data/        # Local storage (SharedPreferences + FlutterSecureStorage)
+│   ├── data/        # CoreDatasource + local storage + remote clients
+│   ├── domain/      # CoreRepository interface
 │   └── presentation/ # Providers, theme, shared widgets
 └── features/        # Feature modules (one folder per feature)
 ```
 
 Each feature follows a three-layer structure: **presentation → domain → data**.
 
+`lib/features/example/` is included as a working reference — it demonstrates the full layer structure (domain model + repository interface, data implementation, Riverpod notifier, HookConsumerWidget screen). Delete it when adding your first real feature.
+
 See [CLAUDE.md](CLAUDE.md) for the full architecture guide, state management patterns, conventions, and how to add new features.
+
+## AI Tooling
+
+| File/Dir | Auto-loaded | Purpose |
+|---|---|---|
+| `CLAUDE.md` | Yes | Architecture guide and conventions |
+| `.agents/rules/` | Yes | Supplemental agent rules (e.g. hot reload) |
+| `.agents/skills/` | No — invoke with `/skill-name` | 35 skill modules for dart, flutter, and riverpod |
+| `.mcp.json` | Yes | MCP server: `flutter-skill` |

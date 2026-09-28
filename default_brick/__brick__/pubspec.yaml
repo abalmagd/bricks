@@ -66,8 +66,9 @@ dependencies:
   intl: ^0.20.3
   fade_shimmer: ^2.4.0
 
-  # Tracing
+  # Tools
   logger: ^2.8.0
+  flutter_skill: ^0.9.37
 
 dependency_overrides:
   equatable: ^3.0.0

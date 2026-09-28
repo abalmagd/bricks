@@ -3,6 +3,8 @@ import 'package:{{name.snakeCase()}}/core/app/localization/localization.dart';
 import 'package:{{name.snakeCase()}}/core/data/local/local_storage.dart';
 import 'package:{{name.snakeCase()}}/core/presentation/providers/provider_observer.dart';
 import 'package:{{name.snakeCase()}}/environment/main.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter_skill/flutter_skill.dart';
 import 'package:{{name.snakeCase()}}/environment/flavor/flavor_config.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +19,7 @@ import 'package:{{name.snakeCase()}}/firebase_options.dart';
 
 class Core {
   static Future<void> initApp() async {
+    if (kDebugMode) FlutterSkillBinding.ensureInitialized();
     final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
     FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 

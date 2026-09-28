@@ -5,7 +5,7 @@ import 'package:{{name.snakeCase()}}/core/app/localization/locale_keys.dart';
 class UnknownFailure extends Failure {
   static String get _defaultType => LocaleKeys.errors_remote_error.tr();
   static String get _defaultMessage => LocaleKeys.errors_remote_unknown.tr();
-
+  
   UnknownFailure() : super(type: _defaultType, message: _defaultMessage);
 }
 
