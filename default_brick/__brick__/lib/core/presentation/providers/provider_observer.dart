@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart';
 import 'package:logger/logger.dart';
-import 'package:test_journal/core/app/utils/alerts.dart';
+import 'package:{{name.snakeCase()}}/core/app/utils/alerts.dart';
 
 /// Logs provider lifecycle events (add, update, dispose, fail) during development.
 base class AppProviderObserver extends ProviderObserver {

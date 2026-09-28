@@ -1,4 +1,4 @@
-import 'package:test_journal/core/presentation/providers/app_lifecycle_effect_provider.dart';
+import 'package:{{name.snakeCase()}}/core/presentation/providers/app_lifecycle_effect_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';

@@ -2,10 +2,10 @@ import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:test_journal/core/app/error/failure.dart';
-import 'package:test_journal/core/app/error/failure_types.dart';
-import 'package:test_journal/core/app/localization/locale_keys.dart';
-import 'package:test_journal/environment/flavor/flavor_config.dart';
+import 'package:{{name.snakeCase()}}/core/app/error/failure.dart';
+import 'package:{{name.snakeCase()}}/core/app/error/failure_types.dart';
+import 'package:{{name.snakeCase()}}/core/app/localization/locale_keys.dart';
+import 'package:{{name.snakeCase()}}/environment/flavor/flavor_config.dart';
 
 final dioProvider = Provider<DioClient>((ref) {
   return DioClient();

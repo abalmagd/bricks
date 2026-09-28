@@ -2,8 +2,8 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'package:test_journal/core/presentation/theme/palette.dart';
-import 'package:test_journal/core/presentation/theme/text_theme.dart';
+import 'package:{{name.snakeCase()}}/core/presentation/theme/palette.dart';
+import 'package:{{name.snakeCase()}}/core/presentation/theme/text_theme.dart';
 
 base mixin CustomTheme {
   static ThemeData _properties(BuildContext context, Brightness brightness) {

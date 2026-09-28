@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:test_journal/environment/flavor/flavor_settings.dart';
+import 'package:{{name.snakeCase()}}/environment/flavor/flavor_settings.dart';
 
 /// This class is used to configure the flavor of the app.
 /// It is used to set the name of the flavor, the color of the banner,
